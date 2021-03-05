@@ -114,6 +114,7 @@ func (svc *Service) Apply(ctx context.Context, request *protob.ApplyRequest) (*p
 
 	// convert each of the sites into a route
 	routes := []caddy.ServerRoute{}
+	nodeRoutes := []caddy.ServerRoute{}
 	for k, site := range request.GetSites() {
 		// get all of the host names for the site
 		hosts := []string{site.GetHostname()}
@@ -140,6 +141,26 @@ func (svc *Service) Apply(ctx context.Context, request *protob.ApplyRequest) (*p
 			},
 			Terminal: true,
 		})
+
+		// also set the 3000 port
+		nodeRoutes = append(nodeRoutes, caddy.ServerRoute{
+			Handle: []caddy.RouteHandle{
+				{
+					Handler: "reverse_proxy",
+					Upstreams: []caddy.Upstream{
+						{
+							Dial: fmt.Sprintf("%s:%d", k, 3000),
+						},
+					},
+				},
+			},
+			Match: []caddy.Match{
+				{
+					Host: hosts,
+				},
+			},
+			Terminal: true,
+		})
 	}
 
 	update := caddy.UpdateRequest{}
@@ -148,6 +169,12 @@ func (svc *Service) Apply(ctx context.Context, request *protob.ApplyRequest) (*p
 	update.HTTPS = caddy.Server{
 		Listen: []string{":443"},
 		Routes: routes,
+	}
+
+	// set the node routes
+	update.Node = caddy.Server{
+		Listen: []string{":3000"},
+		Routes: nodeRoutes,
 	}
 
 	// set the default welcome server

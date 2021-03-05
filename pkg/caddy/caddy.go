@@ -3,6 +3,7 @@ package caddy
 type UpdateRequest struct {
 	HTTPS Server `json:"https,omitempty"`
 	HTTP  Server `json:"http,omitempty"`
+	Node  Server `json:"node,omitempty"`
 }
 
 type Server struct {

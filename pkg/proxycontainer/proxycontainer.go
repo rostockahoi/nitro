@@ -157,6 +157,12 @@ func Create(ctx context.Context, docker client.CommonAPIClient, output terminal.
 		apiPort = os.Getenv("NITRO_API_PORT")
 	}
 
+	// check for a custom API port
+	nodePort := "3000"
+	if _, defined := os.LookupEnv("NITRO_NODE_PORT"); defined {
+		apiPort = os.Getenv("NITRO_NODE_PORT")
+	}
+
 	httpPortNat, err := nat.NewPort("tcp", "80")
 	if err != nil {
 		return fmt.Errorf("unable to set the HTTP port, %w", err)
@@ -172,6 +178,11 @@ func Create(ctx context.Context, docker client.CommonAPIClient, output terminal.
 		return fmt.Errorf("unable to set the API port, %w", err)
 	}
 
+	nodePortNat, err := nat.NewPort("tcp", "3000")
+	if err != nil {
+		return fmt.Errorf("unable to set the node port, %w", err)
+	}
+
 	// create a container
 	resp, err := docker.ContainerCreate(ctx,
 		&container.Config{
@@ -180,6 +191,7 @@ func Create(ctx context.Context, docker client.CommonAPIClient, output terminal.
 				httpPortNat:  struct{}{},
 				httpsPortNat: struct{}{},
 				apiPortNat:   struct{}{},
+				nodePortNat:  struct{}{},
 			},
 			Labels: map[string]string{
 				labels.Nitro:        "true",
@@ -215,6 +227,12 @@ func Create(ctx context.Context, docker client.CommonAPIClient, output terminal.
 					{
 						HostIP:   "127.0.0.1",
 						HostPort: apiPort,
+					},
+				},
+				nodePortNat: {
+					{
+						HostIP:   "127.0.0.1",
+						HostPort: nodePort,
 					},
 				},
 			},
