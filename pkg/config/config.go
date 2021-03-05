@@ -247,6 +247,11 @@ func (s *Site) AsEnvs(addr string) []string {
 	// get the xdebug vars
 	envs = append(envs, xdebugVars(s.PHP, s.Xdebug, s.Version, s.Hostname, addr)...)
 
+	// check if a node version is defined
+	if s.NodeVersion != "" {
+		envs = append(envs, "NODE_VERSION="+s.NodeVersion)
+	}
+
 	return envs
 }
 

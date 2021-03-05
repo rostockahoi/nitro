@@ -10,13 +10,14 @@ import (
 
 func TestSite_AsEnvs(t *testing.T) {
 	type fields struct {
-		Hostname string
-		Aliases  []string
-		Path     string
-		Version  string
-		PHP      PHP
-		Webroot  string
-		Xdebug   bool
+		Hostname    string
+		Aliases     []string
+		Path        string
+		Version     string
+		NodeVersion string
+		PHP         PHP
+		Webroot     string
+		Xdebug      bool
 	}
 	type args struct {
 		addr string
@@ -27,6 +28,44 @@ func TestSite_AsEnvs(t *testing.T) {
 		args   args
 		want   []string
 	}{
+		{
+			name: "node versions are part of the environment",
+			fields: fields{
+				Hostname: "somewebsite.nitro",
+				PHP: PHP{
+					DisplayErrors:         true,
+					MemoryLimit:           "256M",
+					MaxExecutionTime:      3000,
+					UploadMaxFileSize:     "128M",
+					MaxInputVars:          2000,
+					PostMaxSize:           "128M",
+					OpcacheEnable:         true,
+					OpcacheRevalidateFreq: 60,
+				},
+				Version:     "7.1",
+				NodeVersion: "10",
+				Xdebug:      true,
+			},
+			args: args{
+				addr: "host.docker.internal",
+			},
+			want: []string{
+				"COMPOSER_HOME=/tmp",
+				"PHP_DISPLAY_ERRORS=off",
+				"PHP_MEMORY_LIMIT=256M",
+				"PHP_MAX_EXECUTION_TIME=3000",
+				"PHP_UPLOAD_MAX_FILESIZE=128M",
+				"PHP_MAX_INPUT_VARS=2000",
+				"PHP_POST_MAX_SIZE=128M",
+				"PHP_OPCACHE_ENABLE=1",
+				"PHP_OPCACHE_REVALIDATE_FREQ=60",
+				"XDEBUG_SESSION=PHPSTORM",
+				"PHP_IDE_CONFIG=serverName=somewebsite.nitro",
+				"XDEBUG_CONFIG=idekey=PHPSTORM remote_host=host.docker.internal profiler_enable=1 remote_port=9000 remote_autostart=1 remote_enable=1",
+				"XDEBUG_MODE=xdebug2",
+				"NODE_VERSION=10",
+			},
+		},
 		{
 			name: "xdebug 2 options are set if enabled",
 			fields: fields{
@@ -153,13 +192,14 @@ func TestSite_AsEnvs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Site{
-				Hostname: tt.fields.Hostname,
-				Aliases:  tt.fields.Aliases,
-				Path:     tt.fields.Path,
-				Version:  tt.fields.Version,
-				PHP:      tt.fields.PHP,
-				Webroot:  tt.fields.Webroot,
-				Xdebug:   tt.fields.Xdebug,
+				Hostname:    tt.fields.Hostname,
+				Aliases:     tt.fields.Aliases,
+				Path:        tt.fields.Path,
+				Version:     tt.fields.Version,
+				NodeVersion: tt.fields.NodeVersion,
+				PHP:         tt.fields.PHP,
+				Webroot:     tt.fields.Webroot,
+				Xdebug:      tt.fields.Xdebug,
 			}
 			if got := s.AsEnvs(tt.args.addr); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Site.AsEnvs() = \ngot:\n%v, \nwant:\n%v", got, tt.want)
