@@ -191,15 +191,16 @@ type Services struct {
 // are alternate domains), the local path to the site, additional mounts
 // to add to the container, and the directory the index.php is located.
 type Site struct {
-	Hostname   string   `json:"hostname" yaml:"hostname"`
-	Aliases    []string `json:"aliases,omitempty" yaml:"aliases,omitempty"`
-	Path       string   `json:"path" yaml:"path"`
-	Version    string   `json:"version" yaml:"version"`
-	PHP        PHP      `json:"php,omitempty" yaml:"php,omitempty"`
-	Extensions []string `json:"extensions,omitempty" yaml:"extensions,omitempty"`
-	Webroot    string   `json:"webroot" yaml:"webroot"`
-	Xdebug     bool     `json:"xdebug" yaml:"xdebug"`
-	Blackfire  bool     `json:"blackfire" yaml:"blackfire"`
+	Hostname    string   `json:"hostname" yaml:"hostname"`
+	Aliases     []string `json:"aliases,omitempty" yaml:"aliases,omitempty"`
+	Path        string   `json:"path" yaml:"path"`
+	Version     string   `json:"version" yaml:"version"`
+	NodeVersion string   `json:"node_version" yaml:"node_version"`
+	PHP         PHP      `json:"php,omitempty" yaml:"php,omitempty"`
+	Extensions  []string `json:"extensions,omitempty" yaml:"extensions,omitempty"`
+	Webroot     string   `json:"webroot" yaml:"webroot"`
+	Xdebug      bool     `json:"xdebug" yaml:"xdebug"`
+	Blackfire   bool     `json:"blackfire" yaml:"blackfire"`
 }
 
 // GetAbsPath gets the directory for a site.Path,
