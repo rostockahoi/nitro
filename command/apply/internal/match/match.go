@@ -130,6 +130,13 @@ func checkEnvs(site config.Site, blackfire config.Blackfire, envs []string) bool
 			return false
 		}
 
+		// check the node versions
+		if env == "NODE_VERSION" {
+			if site.NodeVersion != val {
+				return false
+			}
+		}
+
 		// show only the environment variables we know about/support
 		if _, ok := config.DefaultEnvs[sp[0]]; ok {
 			// check the value of each environment variable we want to ensure the php config is not the "default" value and that the

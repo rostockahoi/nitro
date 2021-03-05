@@ -23,6 +23,18 @@ func Test_checkEnvs(t *testing.T) {
 		want bool
 	}{
 		{
+			name: "node versions return false if they do not match",
+			args: args{
+				site: config.Site{
+					NodeVersion: "10",
+				},
+				envs: []string{
+					"NODE_VERSION=12",
+				},
+			},
+			want: false,
+		},
+		{
 			name: "blackfire server token returns false if there are no credentials but the environment variables are set",
 			args: args{
 				site: config.Site{
