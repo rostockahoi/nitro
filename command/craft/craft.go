@@ -154,8 +154,6 @@ func NewCommand(home string, docker client.CommonAPIClient, output terminal.Outp
 				return err
 			}
 
-			// attach
-
 			return nil
 		},
 	}
