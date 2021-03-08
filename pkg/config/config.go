@@ -195,7 +195,7 @@ type Site struct {
 	Aliases     []string `json:"aliases,omitempty" yaml:"aliases,omitempty"`
 	Path        string   `json:"path" yaml:"path"`
 	Version     string   `json:"version" yaml:"version"`
-	NodeVersion string   `json:"node_version" yaml:"node_version"`
+	NodeVersion string   `json:"node_version,omitempty" yaml:"node_version,omitempty"`
 	PHP         PHP      `json:"php,omitempty" yaml:"php,omitempty"`
 	Extensions  []string `json:"extensions,omitempty" yaml:"extensions,omitempty"`
 	Webroot     string   `json:"webroot" yaml:"webroot"`
@@ -274,6 +274,19 @@ func (c *Config) SetPHPBoolSetting(hostname, setting string, value bool) error {
 				return fmt.Errorf("unknown php setting %s", setting)
 			}
 		}
+	}
+
+	return fmt.Errorf("unable to find the site: %s", hostname)
+}
+
+func (c *Config) SetSiteNodeVersion(hostname, version string) error {
+	for i, s := range c.Sites {
+		// if its not the right hostname
+		if s.Hostname != hostname {
+			continue
+		}
+
+		c.Sites[i].NodeVersion = version
 	}
 
 	return fmt.Errorf("unable to find the site: %s", hostname)
