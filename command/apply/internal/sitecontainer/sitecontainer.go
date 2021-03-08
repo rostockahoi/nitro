@@ -197,6 +197,12 @@ func create(ctx context.Context, docker client.CommonAPIClient, home, networkID 
 		commands = append(commands, command{Name: "installing-" + ext + "-extension", Commands: []string{"docker-php-ext-install", ext}})
 	}
 
+	// install the node version
+	if site.NodeVersion != "" {
+		commands = append(commands, command{Name: "install nodejs", Commands: []string{"apk", "add", "--allow-untrusted", "/opt/node_versions/nodejs-" + site.NodeVersion + ".apk"}})
+		commands = append(commands, command{Name: "install nodejs", Commands: []string{"apk", "add", "--allow-untrusted", "/opt/node_versions/npm-" + site.NodeVersion + ".apk"}})
+	}
+
 	// run the commands
 	for _, c := range commands {
 		// create the exec
